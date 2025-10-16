@@ -12,8 +12,8 @@ export function DemoBanner() {
       <AlertDescription className="text-blue-800 mt-2">
         <div className="space-y-3">
           <p>
-            You're viewing sample data because no valid API key is configured. 
-            To see real data from your Comp AI organization, you'll need to set up your API credentials.
+            You&apos;re viewing sample data because no valid API key is configured. 
+            To see real data from your Comp AI organization, you&apos;ll need to set up your API credentials.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button 

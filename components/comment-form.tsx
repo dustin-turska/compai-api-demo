@@ -18,7 +18,7 @@ interface CommentFormProps {
 export function CommentForm({ task, onCommentAdded, className = '' }: CommentFormProps) {
   const [content, setContent] = useState('');
   const [selectedUserId, setSelectedUserId] = useState<string>('');
-  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string; email: string; } | null>(null);
+  const [, setSelectedUser] = useState<{ id: string; name: string; email: string; } | null>(null);
   const [attachments, setAttachments] = useState<{ fileName: string; fileType: string; fileData: string; description?: string; }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
@@ -54,7 +54,7 @@ export function CommentForm({ task, onCommentAdded, className = '' }: CommentFor
         content: content.trim(),
         entityId: task.id,
         entityType: 'task',
-        attachments: attachments.length > 0 ? attachments as any : undefined,
+        attachments: attachments.length > 0 ? attachments : undefined,
       };
 
       console.log('💬 Preparing comment request:');

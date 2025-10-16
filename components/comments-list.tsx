@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Comment } from '@/lib/types';
 import { compAIClient } from '@/lib/api';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -20,7 +20,7 @@ export function CommentsList({ entityId, entityType, refreshTrigger = 0, classNa
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -39,11 +39,11 @@ export function CommentsList({ entityId, entityType, refreshTrigger = 0, classNa
     } finally {
       setLoading(false);
     }
-  };
+  }, [entityId, entityType]);
 
   useEffect(() => {
     fetchComments();
-  }, [entityId, entityType, refreshTrigger]);
+  }, [refreshTrigger, fetchComments]);
 
   const formatDate = (dateString: string) => {
     try {

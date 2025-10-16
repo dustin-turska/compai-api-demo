@@ -144,32 +144,7 @@ function parseCSVContent(csvContent: string): string[][] {
   return rows;
 }
 
-function parseCSVLine(line: string): string[] {
-  const fields: string[] = [];
-  let currentField = '';
-  let inQuotes = false;
-  let i = 0;
-  
-  while (i < line.length) {
-    const char = line[i];
-    
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      fields.push(currentField.trim());
-      currentField = '';
-    } else {
-      currentField += char;
-    }
-    
-    i++;
-  }
-  
-  // Add the last field
-  fields.push(currentField.trim());
-  
-  return fields;
-}
+// Removed unused parseCSVLine function to satisfy lint rules
 
 export async function loadISO27001Controls(): Promise<ISO27001Control[]> {
   try {

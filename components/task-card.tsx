@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Task, Attachment } from '@/lib/types';
 import { compAIClient } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,7 +57,7 @@ export function TaskCard({ task }: TaskCardProps) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const fetchAttachments = async () => {
+  const fetchAttachments = useCallback(async () => {
     setLoadingAttachments(true);
     try {
       const response = await compAIClient.getTaskAttachments(task.id);
@@ -69,11 +69,11 @@ export function TaskCard({ task }: TaskCardProps) {
     } finally {
       setLoadingAttachments(false);
     }
-  };
+  }, [task.id]);
 
   useEffect(() => {
     fetchAttachments();
-  }, [task.id]);
+  }, [fetchAttachments]);
 
   const handleUploadComplete = () => {
     fetchAttachments(); // Refresh attachments list
@@ -93,7 +93,7 @@ export function TaskCard({ task }: TaskCardProps) {
           </Badge>
         </div>
         {task.description && (
-          <CardDescription className="text-gray-700 leading-relaxed text-sm line-clamp-4">
+          <CardDescription className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">
             {task.description}
           </CardDescription>
         )}

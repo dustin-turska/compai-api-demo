@@ -104,7 +104,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
             />
             {!companyName.trim() && (
               <p className="text-xs text-gray-500 mt-1">
-                This will replace "[Company]" in the Excel file header
+                This will replace &quot;[Company]&quot; in the Excel file header
               </p>
             )}
           </div>
@@ -115,7 +115,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
             </label>
             <UserSelector
               value={preparedBy?.id}
-              onValueChange={(userId) => {}} // This will be set by onUserChange
+              onValueChange={() => {}} // This will be set by onUserChange
               onUserChange={(user) => setPreparedBy(user || undefined)}
               placeholder="Select who prepared this document"
               className="w-full"
@@ -133,7 +133,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
             <div className="space-y-2">
               <UserSelector
                 value={approvedBy?.id}
-                onValueChange={(userId) => {}} // This will be set by onUserChange
+                onValueChange={() => {}} // This will be set by onUserChange
                 onUserChange={(user) => setApprovedBy(user || undefined)}
                 placeholder="Select who approved this document"
                 className="w-full"
@@ -151,7 +151,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
             </div>
             <p className="text-xs text-gray-500 mt-1">
               {approvedBy 
-                ? "Add the approver's title to be displayed in the document" 
+                ? "Add the approver&apos;s title to be displayed in the document" 
                 : "This person will be listed as the document approver"}
             </p>
           </div>

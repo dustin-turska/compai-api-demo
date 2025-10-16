@@ -1,4 +1,5 @@
-import { Task, ApiResponse, ApiError, Attachment, UploadAttachmentRequest, Comment, CreateCommentRequest, PeopleResponse, ContextResponse, ContextEntry } from './types';
+import { Task, ApiResponse, Attachment, UploadAttachmentRequest, Comment, CreateCommentRequest, PeopleResponse, ContextResponse, ContextEntry } from './types';
+import { maskHeaders, maskBody } from './utils';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_COMPAI_API_URL || 'https://api.trycomp.ai/v1';
 const API_KEY = process.env.NEXT_PUBLIC_COMPAI_API_KEY;
@@ -59,7 +60,7 @@ class CompAIClient {
     try {
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return {
         error: 'Failed to parse response JSON'
       };
@@ -119,7 +120,7 @@ class CompAIClient {
       // Use standard headers only - custom user ID headers are blocked by CORS
       const headers = this.getHeaders();
       
-      console.log('Headers:', headers);
+      console.log('Headers:', maskHeaders(headers as Record<string, unknown>));
       
       // Try multiple field names for user ID in case API expects different format
       const requestBody = {
@@ -131,7 +132,7 @@ class CompAIClient {
         'user-id': attachment.createdBy,
       };
       
-      console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+      console.log('Request Body:', JSON.stringify(maskBody(requestBody), null, 2));
       
       const response = await fetch(`${this.baseUrl}/tasks/${taskId}/attachments`, {
         method: 'POST',
@@ -140,7 +141,7 @@ class CompAIClient {
       });
 
       console.log('📡 Upload Response Status:', response.status);
-      console.log('📡 Upload Response Headers:', Object.fromEntries(response.headers.entries()));
+      console.log('📡 Upload Response Headers:', maskHeaders(Object.fromEntries(response.headers.entries())));
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -212,8 +213,8 @@ class CompAIClient {
       };
       
       console.log('💬 Create Comment Request:');
-      console.log('Headers:', headers);
-      console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+      console.log('Headers:', maskHeaders(headers as Record<string, unknown>));
+      console.log('Request Body:', JSON.stringify(maskBody(requestBody), null, 2));
       
       const response = await fetch(`${this.baseUrl}/comments`, {
         method: 'POST',
@@ -222,7 +223,7 @@ class CompAIClient {
       });
 
       console.log('📡 Comment Response Status:', response.status);
-      console.log('📡 Comment Response Headers:', Object.fromEntries(response.headers.entries()));
+      console.log('📡 Comment Response Headers:', maskHeaders(Object.fromEntries(response.headers.entries())));
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -299,7 +300,7 @@ class CompAIClient {
     try {
       console.log('🔄 Get Context Entries Request:');
       const headers = this.getHeaders();
-      console.log('Headers:', headers);
+      console.log('Headers:', maskHeaders(headers as Record<string, unknown>));
       
       const response = await fetch(`${this.baseUrl}/context`, {
         method: 'GET',
@@ -307,7 +308,7 @@ class CompAIClient {
       });
 
       console.log('📡 Context Response Status:', response.status);
-      console.log('📡 Context Response Headers:', Object.fromEntries(response.headers.entries()));
+      console.log('📡 Context Response Headers:', maskHeaders(Object.fromEntries(response.headers.entries())));
 
       return await this.handleResponse<ContextResponse>(response);
     } catch (error) {
@@ -542,7 +543,7 @@ Begin your assessment now:`;
         const jsonMatch = contextAnalysisResult.match(/\{[\s\S]*\}/);
         const jsonStr = jsonMatch ? jsonMatch[0] : contextAnalysisResult;
         organizationalProfile = JSON.parse(jsonStr);
-      } catch (parseError) {
+      } catch {
         console.warn('Failed to parse organizational profile, using fallback');
         organizationalProfile = {
           businessModel: 'Unable to parse business model from context',
@@ -721,6 +722,65 @@ Begin your assessment now:`;
       isRequired,
       reason: reason || undefined
     };
+  }
+
+  async generateSystemsDescription(contextEntries: ContextEntry[]): Promise<string> {
+    if (!this.apiKey) {
+      throw new Error('OpenAI API key not configured. Please set NEXT_PUBLIC_OPENAI_API_KEY in your environment variables.');
+    }
+
+    const systemPrompt = `You are a senior platform architect. Generate a concise, professional systems description for an engineering due diligence document.
+
+Requirements:
+- Write 1-3 cohesive paragraphs in clear present tense.
+- Prefer facts from the provided organization context.
+- Use the following guideline/example as the target style and coverage, adapting to the org where sensible:
+
+Example Style and Coverage:
+"The platform is hosted on AWS infrastructure with data stored in Amazon RDS and file storage handled by Amazon S3. The application is built using Next.js with the T3 Stack (Prisma ORM, tRPC, and Auth.js for authentication), deployed using SST.dev for Infrastructure as Code. Content delivery is managed through Cloudflare CDN, with AWS GuardDuty providing threat detection and AWS Inspector handling security assessments. The system utilizes Inngest for background job processing, New Relic for observability and monitoring, and Resend for email communications. Version control is managed through GitHub, with additional integrations including Deepgram for speech-to-text transcription services and Gemini 2.5 Flash AI services via the AI SDK."
+
+Instructions:
+- If the context specifies technologies/vendors, reflect them accurately.
+- If context is silent on a capability, assume modern cloud-native equivalents consistent with the example.
+- Do not add overly specific details like exact VPC CIDRs, instance sizes, or repository names.
+- Keep the tone objective, avoid marketing language.
+`;
+
+    let userPrompt = 'ORGANIZATION CONTEXT ENTRIES:\n\n';
+    contextEntries.forEach((entry, index) => {
+      userPrompt += `Context Entry ${index + 1}:\nQuestion: ${entry.question}\nAnswer: ${entry.answer}\n`;
+      if (entry.tags && entry.tags.length > 0) {
+        userPrompt += `Tags: ${entry.tags.join(', ')}\n`;
+      }
+      userPrompt += `\n`;
+    });
+    userPrompt += '\nGenerate the systems description now.';
+
+    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4-turbo',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.2,
+        max_completion_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => undefined);
+      throw new Error(`OpenAI Systems Description error: ${errorData?.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content?.trim() || '';
+    return content;
   }
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Member } from '@/lib/types';
 import { compAIClient, CompAIClient } from '@/lib/api';
 import {
@@ -37,7 +38,7 @@ export function UserSelector({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPeople = async () => {
+  const fetchPeople = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -61,11 +62,11 @@ export function UserSelector({
     } finally {
       setLoading(false);
     }
-  };
+  }, [clientProp]);
 
   useEffect(() => {
     fetchPeople();
-  }, []);
+  }, [fetchPeople]);
 
   const selectedMember = members.find(member => member.user.id === value);
 
@@ -108,10 +109,12 @@ export function UserSelector({
             {selectedMember && (
               <div className="flex items-center gap-2">
                 {selectedMember.user.image ? (
-                  <img 
+                  <Image 
                     src={selectedMember.user.image} 
                     alt={selectedMember.user.name}
-                    className="w-5 h-5 rounded-full"
+                    width={20}
+                    height={20}
+                    className="rounded-full"
                   />
                 ) : (
                   <div className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center">
@@ -141,10 +144,12 @@ export function UserSelector({
               <SelectItem key={member.user.id} value={member.user.id}>
                 <div className="flex items-center gap-3 w-full">
                   {member.user.image ? (
-                    <img 
+                    <Image 
                       src={member.user.image} 
                       alt={member.user.name}
-                      className="w-6 h-6 rounded-full"
+                      width={24}
+                      height={24}
+                      className="rounded-full"
                     />
                   ) : (
                     <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">

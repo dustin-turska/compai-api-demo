@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Task } from '@/lib/types';
-import { compAIClient, isDemoMode } from '@/lib/api';
+import { useApiConfig } from '@/lib/api-config-context';
 import { TaskCard } from './task-card';
 import { DemoBanner } from './demo-banner';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,14 @@ export function TasksList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Task['status'] | 'all'>('all');
+  const { getActiveCompAIClient, useCustomConfig } = useApiConfig();
 
   const fetchTasks = async () => {
     setLoading(true);
     setError(null);
     
-    const response = await compAIClient.getTasks();
+    const client = getActiveCompAIClient();
+    const response = await client.getTasks();
     
     if (response.error) {
       setError(response.error);
@@ -33,7 +35,8 @@ export function TasksList() {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useCustomConfig]);
 
   const filteredTasks = filter === 'all' 
     ? tasks 
@@ -85,7 +88,7 @@ export function TasksList() {
   return (
     <div className="space-y-6">
       {/* Demo Mode Banner */}
-      {isDemoMode && <DemoBanner />}
+      {!useCustomConfig && <DemoBanner />}
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -148,7 +151,7 @@ export function TasksList() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        <div className="flex flex-col gap-6">
           {filteredTasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}

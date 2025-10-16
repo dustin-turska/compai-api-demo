@@ -125,7 +125,7 @@ export function FileUpload({ onUpload, isUploading = false, className = '' }: Fi
       
         const uploadRequest: UploadAttachmentRequest = {
           fileName: selectedFile.name,
-          fileType: selectedFile.type as any,
+          fileType: selectedFile.type as UploadAttachmentRequest['fileType'],
           fileData: base64Data,
           description: description.trim() || undefined,
           createdBy: selectedUserId, // Try createdBy field name
