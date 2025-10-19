@@ -168,7 +168,7 @@ export function FileUpload({ onUpload, isUploading = false, className = '' }: Fi
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           dragActive
-            ? 'border-blue-400 bg-blue-50'
+            ? 'border-accent-400 bg-accent-50'
             : selectedFile
             ? 'border-green-300 bg-green-50'
             : 'border-gray-300 hover:border-gray-400'
@@ -197,7 +197,7 @@ export function FileUpload({ onUpload, isUploading = false, className = '' }: Fi
           </div>
         ) : (
           <div className="space-y-3">
-            <Upload className={`h-12 w-12 mx-auto ${dragActive ? 'text-blue-500' : 'text-gray-400'}`} />
+            <Upload className={`h-12 w-12 mx-auto ${dragActive ? 'text-accent-600' : 'text-gray-400'}`} />
             <div>
               <p className="text-lg font-medium text-gray-900">
                 {dragActive ? 'Drop file here' : 'Drag & drop a file here'}
@@ -249,7 +249,7 @@ export function FileUpload({ onUpload, isUploading = false, className = '' }: Fi
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add a description for this attachment..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
             rows={3}
             maxLength={500}
           />
