@@ -161,7 +161,7 @@ export function UserSelector({
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       <span>{member.user.email}</span>
                       {member.role === 'admin' && (
-                        <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-xs font-medium">
+                        <span className="bg-accent-100 text-accent-800 px-1.5 py-0.5 rounded text-xs font-medium">
                           Admin
                         </span>
                       )}

@@ -80,10 +80,10 @@ export function TaskCard({ task }: TaskCardProps) {
   };
 
   return (
-    <Card className="group hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-300 border-0 bg-white ring-1 ring-gray-200 hover:ring-blue-200">
+    <Card className="group hover:shadow-lg hover:shadow-accent-50 transition-all duration-300 border-0 bg-white ring-1 ring-gray-200 hover:ring-accent-200">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between gap-4 mb-3">
-          <CardTitle className="text-xl font-bold text-gray-900 leading-tight group-hover:text-blue-900 transition-colors">
+          <CardTitle className="text-xl font-bold text-gray-900 leading-tight group-hover:text-accent-800 transition-colors">
             {task.title}
           </CardTitle>
           <Badge 
@@ -179,7 +179,7 @@ export function TaskCard({ task }: TaskCardProps) {
               <span className="font-medium">Created {formatDate(task.createdAt)}</span>
               <span className="font-medium">Updated {formatDate(task.updatedAt)}</span>
             </div>
-            <div className="w-2 h-2 rounded-full bg-gray-300 group-hover:bg-blue-400 transition-colors"></div>
+            <div className="w-2 h-2 rounded-full bg-gray-300 group-hover:bg-accent-500 transition-colors"></div>
           </div>
         </div>
       </CardContent>

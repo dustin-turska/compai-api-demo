@@ -150,14 +150,6 @@
   }
   
   /* Custom accent color classes */
-  .bg-accent-600 {
-    background-color: #144c39;
-  }
-  
-  .bg-accent-700 {
-    background-color: #0f3b2c;
-  }
-  
   .bg-accent-50 {
     background-color: #f0f7f4;
   }
@@ -172,6 +164,18 @@
   
   .bg-accent-200 {
     background-color: #a8d7be;
+  }
+  
+  .bg-accent-500 {
+    background-color: #1a5c45;
+  }
+  
+  .bg-accent-600 {
+    background-color: #144c39;
+  }
+  
+  .bg-accent-700 {
+    background-color: #0f3b2c;
   }
   
   .text-accent-600 {
@@ -198,6 +202,14 @@
     border-color: #7cc09f;
   }
   
+  .border-accent-400 {
+    border-color: #50a880;
+  }
+  
+  .border-accent-500 {
+    border-color: #1a5c45;
+  }
+  
   .hover\:bg-accent-700:hover {
     background-color: #0f3b2c;
   }
@@ -216,6 +228,23 @@
   
   .focus\:border-accent-500:focus {
     border-color: #1a5c45;
+  }
+  
+  .hover\:shadow-accent-50:hover {
+    --tw-shadow-color: #f0f7f4;
+    --tw-shadow: var(--tw-shadow-colored);
+  }
+  
+  .hover\:ring-accent-200:hover {
+    --tw-ring-color: #a8d7be;
+  }
+  
+  .group-hover\:text-accent-800:hover {
+    color: #0a2a1f;
+  }
+  
+  .group-hover\:bg-accent-500:hover {
+    background-color: #1a5c45;
   }
 
   /* Mobile responsive table */

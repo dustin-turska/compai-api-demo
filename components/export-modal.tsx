@@ -75,7 +75,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5 text-green-600" />
+            <Download className="h-5 w-5 text-accent-600" />
             Export Statement of Applicability
           </DialogTitle>
           <DialogDescription>
@@ -94,7 +94,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Enter your company name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && companyName.trim()) {
                   handleExport();
@@ -145,7 +145,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
                   value={approvedByTitle}
                   onChange={(e) => setApprovedByTitle(e.target.value)}
                   placeholder="Enter their title (e.g., Chief Information Officer)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                 />
               )}
             </div>
@@ -167,7 +167,7 @@ export function ExportModal({ onExport, trigger, disabled = false, compAIClient 
             <Button 
               onClick={handleExport}
               disabled={!companyName.trim() || isExporting}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               {isExporting ? (
                 <>

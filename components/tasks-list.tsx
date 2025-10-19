@@ -114,7 +114,7 @@ export function TasksList() {
             onClick={() => setFilter(key)}
             className={`flex items-center gap-2 shadow-sm hover:shadow-md transition-all ${
               filter === key 
-                ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                ? "bg-accent-600 hover:bg-accent-700 text-white" 
                 : "hover:bg-gray-50"
             }`}
           >
@@ -124,7 +124,7 @@ export function TasksList() {
               variant="secondary" 
               className={`ml-1 ${
                 filter === key 
-                  ? "bg-blue-500 text-white border-blue-400" 
+                  ? "bg-accent-500 text-white border-accent-400" 
                   : "bg-gray-100 text-gray-700"
               }`}
             >

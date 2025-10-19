@@ -254,7 +254,7 @@ export default function StatementOfApplicabilityPage() {
           <div className="px-4 py-6 sm:px-0">
             <div className="flex items-center justify-center min-h-96">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600 mx-auto mb-4"></div>
                 <p className="text-gray-600">Loading ISO 27001 controls...</p>
               </div>
             </div>
@@ -298,7 +298,7 @@ export default function StatementOfApplicabilityPage() {
                 onExport={handleExportToExcel}
                 compAIClient={getActiveCompAIClient()}
                 trigger={
-                  <Button className="bg-green-600 hover:bg-green-700">
+                  <Button className="bg-accent-600 hover:bg-accent-700">
                     <Download className="h-4 w-4 mr-2" />
                     Export Excel
                   </Button>

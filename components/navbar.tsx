@@ -77,7 +77,7 @@ export function Navbar() {
             </div>
             <div className="flex items-center gap-3">
               {useCustomConfig && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-accent-100 text-accent-800">
                   Custom API
                 </Badge>
               )}

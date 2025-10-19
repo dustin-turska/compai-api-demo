@@ -60,10 +60,10 @@ export function ApiConfigModal({ isOpen, onClose }: ApiConfigModalProps) {
         </div>
         
         <div className="space-y-4">
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-3 bg-accent-50 border border-accent-200 rounded-lg">
             <div className="flex items-start gap-2">
-              <Key className="h-4 w-4 text-blue-600 mt-0.5" />
-              <div className="text-sm text-blue-800">
+              <Key className="h-4 w-4 text-accent-600 mt-0.5" />
+              <div className="text-sm text-accent-800">
                 <p className="font-medium mb-1">Custom API Configuration</p>
                 <p>Configure your own Comp AI API credentials to access your organization&apos;s data instead of the demo data.</p>
               </div>
