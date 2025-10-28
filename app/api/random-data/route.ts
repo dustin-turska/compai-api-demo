@@ -1,0 +1,232 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+// God API key for demo purposes
+const DEMO_API_KEY = '1234567890zxcvbmn';
+
+// Hardcoded random device data
+const randomData = {
+  devices: [
+    {
+      id: 'dev-001',
+      deviceName: 'MacBook Pro 16"',
+      userName: 'Sarah Chen',
+      userId: 'usr-101',
+      deviceType: 'Laptop',
+      os: 'macOS 14.2',
+      manufacturer: 'Apple',
+      model: 'MacBook Pro (2023)',
+      serialNumber: 'C02XL8VHJG5H',
+      ipAddress: '192.168.1.105',
+      macAddress: '00:1B:63:84:45:E6',
+      status: 'online',
+      lastSeen: '2024-01-15T10:45:00Z',
+      installDate: '2023-05-12',
+      securityScore: 95,
+      compliance: true,
+      memoryGB: 32,
+      storageGB: 1024,
+      storageUsedGB: 456,
+      location: 'San Francisco, CA',
+    },
+    {
+      id: 'dev-002',
+      deviceName: 'iPhone 15 Pro',
+      userName: 'Michael Rodriguez',
+      userId: 'usr-102',
+      deviceType: 'Mobile',
+      os: 'iOS 17.2',
+      manufacturer: 'Apple',
+      model: 'iPhone 15 Pro',
+      serialNumber: 'F2LXM8KHJD8W',
+      ipAddress: '192.168.1.142',
+      macAddress: '00:1C:42:A4:B8:F2',
+      status: 'online',
+      lastSeen: '2024-01-15T10:30:00Z',
+      installDate: '2023-09-25',
+      securityScore: 98,
+      compliance: true,
+      memoryGB: 8,
+      storageGB: 256,
+      storageUsedGB: 128,
+      location: 'New York, NY',
+    },
+    {
+      id: 'dev-003',
+      deviceName: 'ThinkPad X1 Carbon',
+      userName: 'Emily Watson',
+      userId: 'usr-103',
+      deviceType: 'Laptop',
+      os: 'Windows 11 Pro',
+      manufacturer: 'Lenovo',
+      model: 'ThinkPad X1 Carbon Gen 11',
+      serialNumber: 'PF3K8M2L',
+      ipAddress: '192.168.1.87',
+      macAddress: '54:E1:AD:77:C3:9A',
+      status: 'offline',
+      lastSeen: '2024-01-14T18:20:00Z',
+      installDate: '2023-03-18',
+      securityScore: 72,
+      compliance: false,
+      memoryGB: 16,
+      storageGB: 512,
+      storageUsedGB: 410,
+      location: 'Austin, TX',
+    },
+    {
+      id: 'dev-004',
+      deviceName: 'Dell Precision 5570',
+      userName: 'James Kim',
+      userId: 'usr-104',
+      deviceType: 'Laptop',
+      os: 'Windows 11 Pro',
+      manufacturer: 'Dell',
+      model: 'Precision 5570',
+      serialNumber: '8MNB4K7',
+      ipAddress: '192.168.1.221',
+      macAddress: 'A4:BB:6D:52:89:1E',
+      status: 'online',
+      lastSeen: '2024-01-15T10:42:00Z',
+      installDate: '2023-07-08',
+      securityScore: 88,
+      compliance: true,
+      memoryGB: 64,
+      storageGB: 2048,
+      storageUsedGB: 892,
+      location: 'Seattle, WA',
+    },
+    {
+      id: 'dev-005',
+      deviceName: 'iPad Pro 12.9"',
+      userName: 'Lisa Anderson',
+      userId: 'usr-105',
+      deviceType: 'Tablet',
+      os: 'iPadOS 17.2',
+      manufacturer: 'Apple',
+      model: 'iPad Pro (2023)',
+      serialNumber: 'DMQXK8VHF1XY',
+      ipAddress: '192.168.1.156',
+      macAddress: '88:66:5A:1C:D4:B7',
+      status: 'online',
+      lastSeen: '2024-01-15T09:15:00Z',
+      installDate: '2023-11-02',
+      securityScore: 92,
+      compliance: true,
+      memoryGB: 16,
+      storageGB: 512,
+      storageUsedGB: 234,
+      location: 'Boston, MA',
+    },
+    {
+      id: 'dev-006',
+      deviceName: 'Samsung Galaxy S24',
+      userName: 'David Park',
+      userId: 'usr-106',
+      deviceType: 'Mobile',
+      os: 'Android 14',
+      manufacturer: 'Samsung',
+      model: 'Galaxy S24 Ultra',
+      serialNumber: 'R58NA0Q7KBD',
+      ipAddress: '192.168.1.189',
+      macAddress: 'C8:3A:35:2F:8E:A9',
+      status: 'online',
+      lastSeen: '2024-01-15T10:38:00Z',
+      installDate: '2024-01-10',
+      securityScore: 85,
+      compliance: true,
+      memoryGB: 12,
+      storageGB: 512,
+      storageUsedGB: 78,
+      location: 'Los Angeles, CA',
+    },
+  ],
+  statistics: {
+    totalDevices: 148,
+    onlineDevices: 132,
+    offlineDevices: 16,
+    compliantDevices: 135,
+    nonCompliantDevices: 13,
+    averageSecurityScore: 87.5,
+    totalUsers: 92,
+    activeUsers: 84,
+  },
+  recentActivity: [
+    {
+      id: 'act-001',
+      type: 'device_online',
+      message: 'Device "MacBook Pro 16"" came online',
+      timestamp: '2024-01-15T10:45:00Z',
+      userName: 'Sarah Chen',
+      deviceId: 'dev-001',
+      severity: 'info',
+    },
+    {
+      id: 'act-002',
+      type: 'security_alert',
+      message: 'Low security score detected on ThinkPad X1 Carbon',
+      timestamp: '2024-01-15T10:20:00Z',
+      userName: 'Emily Watson',
+      deviceId: 'dev-003',
+      severity: 'warning',
+    },
+    {
+      id: 'act-003',
+      type: 'device_registered',
+      message: 'New device registered: Samsung Galaxy S24',
+      timestamp: '2024-01-10T14:30:00Z',
+      userName: 'David Park',
+      deviceId: 'dev-006',
+      severity: 'info',
+    },
+    {
+      id: 'act-004',
+      type: 'compliance_failed',
+      message: 'Device failed compliance check',
+      timestamp: '2024-01-14T16:45:00Z',
+      userName: 'Emily Watson',
+      deviceId: 'dev-003',
+      severity: 'critical',
+    },
+    {
+      id: 'act-005',
+      type: 'software_update',
+      message: 'Software update completed successfully',
+      timestamp: '2024-01-14T09:10:00Z',
+      userName: 'James Kim',
+      deviceId: 'dev-004',
+      severity: 'info',
+    },
+  ],
+  alertsSummary: {
+    critical: 3,
+    warning: 8,
+    info: 15,
+  },
+};
+
+export async function GET(request: NextRequest) {
+  // Check for API key in headers
+  const apiKey = request.headers.get('x-api-key');
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'API key is required. Please provide x-api-key header.' },
+      { status: 401 }
+    );
+  }
+
+  if (apiKey !== DEMO_API_KEY) {
+    return NextResponse.json(
+      { error: 'Invalid API key' },
+      { status: 403 }
+    );
+  }
+
+  // Return the hardcoded random data
+  return NextResponse.json({
+    success: true,
+    data: randomData,
+    timestamp: new Date().toISOString(),
+    message: 'Data retrieved successfully',
+  });
+}
+
