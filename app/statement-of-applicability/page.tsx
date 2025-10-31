@@ -11,8 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Shield, Database, Check, X, Edit3, Download, Bot, CheckCircle } from 'lucide-react';
+import { AlertCircle, Shield, Database, Check, X, Edit3, Download, Bot, CheckCircle, User } from 'lucide-react';
 import { DemoBanner } from '@/components/demo-banner';
+import { UserSelector } from '@/components/user-selector';
 
 export default function StatementOfApplicabilityPage() {
   const [contextEntries, setContextEntries] = useState<ContextEntry[]>([]);
@@ -26,6 +27,8 @@ export default function StatementOfApplicabilityPage() {
   const [aiAssessmentLoading, setAiAssessmentLoading] = useState(false);
   const [aiAssessmentError, setAiAssessmentError] = useState<string | null>(null);
   const [lastAssessmentResult, setLastAssessmentResult] = useState<OpenAIAssessmentResponse | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string; email: string; } | null>(null);
   
   // Use global API configuration
   const { getActiveCompAIClient, useCustomConfig } = useApiConfig();
@@ -167,6 +170,11 @@ export default function StatementOfApplicabilityPage() {
       return;
     }
 
+    if (!selectedUser) {
+      setAiAssessmentError('Please select a user who is performing the assessment.');
+      return;
+    }
+
     try {
       setAiAssessmentLoading(true);
       setAiAssessmentError(null);
@@ -174,6 +182,7 @@ export default function StatementOfApplicabilityPage() {
       console.log('🤖 Starting OpenAI assessment...');
       console.log('Context entries:', contextEntries.length);
       console.log('Controls to assess:', iso27001Controls.length);
+      console.log('Assessed by:', selectedUser.name);
 
       const assessmentRequest = {
         contextEntries,
@@ -205,6 +214,7 @@ export default function StatementOfApplicabilityPage() {
             isApplicable: assessment.isRequired ? 'Applicable' as const : 'Not Applicable' as const,
             notApplicableReason: assessment.isRequired ? '' : (assessment.reason || control.notApplicableReason),
             dateLastAssessed: currentDate,
+            assessedBy: selectedUser,
           };
         }
         return control;
@@ -218,7 +228,7 @@ export default function StatementOfApplicabilityPage() {
       // Show success message
       const applicableCount = result.results.filter(r => r.isRequired).length;
       const notApplicableCount = result.results.filter(r => !r.isRequired).length;
-      const message = `OpenAI assessment completed successfully!\n\nResults:\n• Total Controls Assessed: ${result.totalProcessed}\n• Applicable: ${applicableCount}\n• Not Applicable: ${notApplicableCount}\n• Processing Time: ${(result.processingTime / 1000).toFixed(1)}s`;
+      const message = `OpenAI assessment completed successfully!\n\nResults:\n• Total Controls Assessed: ${result.totalProcessed}\n• Applicable: ${applicableCount}\n• Not Applicable: ${notApplicableCount}\n• Assessed by: ${selectedUser.name}\n• Processing Time: ${(result.processingTime / 1000).toFixed(1)}s`;
       alert(message);
 
     } catch (error) {
@@ -382,47 +392,71 @@ export default function StatementOfApplicabilityPage() {
 
           {activeTab === 'iso27001' && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">ISO 27001 Controls</h2>
-                  <p className="text-gray-600 mt-1">
-                    Review and manage the applicability of ISO 27001 Annex A controls
-                  </p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-gray-500">
-                    Total: {iso27001Controls.length} controls
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">ISO 27001 Controls</h2>
+                    <p className="text-gray-600 mt-1">
+                      Review and manage the applicability of ISO 27001 Annex A controls
+                    </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={reloadControls}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2"
-                    >
-                      <Database className="h-4 w-4" />
-                      Reload Controls
-                    </Button>
-                    <Button
-                      onClick={runOpenAIAssessment}
-                      disabled={aiAssessmentLoading || contextEntries.length === 0}
-                      size="sm"
-                      className="bg-accent-600 hover:bg-accent-700 flex items-center gap-2"
-                    >
-                      {aiAssessmentLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                          Assessing...
-                        </>
-                      ) : (
-                        <>
-                          <Bot className="h-4 w-4" />
-                          AI Assessment
-                        </>
-                      )}
-                    </Button>
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-500">
+                      Total: {iso27001Controls.length} controls
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={reloadControls}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Database className="h-4 w-4" />
+                        Reload Controls
+                      </Button>
+                    </div>
                   </div>
                 </div>
+
+                {/* AI Assessment Section */}
+                <Card className="border-accent-200 bg-accent-50/30">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 flex-1">
+                        <User className="h-4 w-4 text-gray-600" />
+                        <label className="text-sm font-medium text-gray-700">
+                          Assessment performed by:
+                        </label>
+                        <UserSelector
+                          value={selectedUserId}
+                          onValueChange={setSelectedUserId}
+                          onUserChange={setSelectedUser}
+                          placeholder="Select user..."
+                          className="flex-1 max-w-xs"
+                          compAIClient={getActiveCompAIClient()}
+                        />
+                      </div>
+                      <Button
+                        onClick={runOpenAIAssessment}
+                        disabled={aiAssessmentLoading || contextEntries.length === 0 || !selectedUser}
+                        size="sm"
+                        className="bg-accent-600 hover:bg-accent-700 flex items-center gap-2"
+                      >
+                        {aiAssessmentLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                            Assessing...
+                          </>
+                        ) : (
+                          <>
+                            <Bot className="h-4 w-4" />
+                            Run AI Assessment
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
               {/* AI Assessment Error */}
@@ -536,16 +570,26 @@ export default function StatementOfApplicabilityPage() {
                             </div>
                           )}
 
-                          {/* Assessment date */}
+                          {/* Assessment date and user */}
                           <div className="pt-2 border-t border-gray-100">
-                            <p className="text-xs text-gray-500">
-                              <span className="font-medium">Last assessed:</span> {control.dateLastAssessed || 'Not assessed'}
-                              {control.dateLastAssessed && (
-                                <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
-                                  ✓ Current
-                                </span>
-                              )}
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <div className="space-y-1">
+                                <p className="text-xs text-gray-500">
+                                  <span className="font-medium">Last assessed:</span> {control.dateLastAssessed || 'Not assessed'}
+                                  {control.dateLastAssessed && (
+                                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                                      ✓ Current
+                                    </span>
+                                  )}
+                                </p>
+                                {control.assessedBy && (
+                                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                                    <User className="h-3 w-3" />
+                                    <span className="font-medium">Assessed by:</span> {control.assessedBy.name}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </CardContent>

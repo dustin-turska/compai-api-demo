@@ -59,14 +59,15 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
       '',
       'Is this Applicable?',
       'Date Last Assessed',
+      'Assessed By',
       'Why is this not applicable?'
     ],
     // Sub-headers for drivers
-    ['', '', '', 'Business', 'Risk', 'Legal', 'Contract', '', '', ''],
+    ['', '', '', 'Business', 'Risk', 'Legal', 'Contract', '', '', '', ''],
     // Empty row
     [''],
     // Section header
-    ['5', 'Organisational Controls', '', '', '', '', '', '', '', '']
+    ['5', 'Organisational Controls', '', '', '', '', '', '', '', '', '']
   ];
 
   // Add control data
@@ -83,6 +84,7 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
         'No', // Contract driver - No because not applicable
         control.isApplicable,
         control.dateLastAssessed || '',
+        control.assessedBy ? control.assessedBy.name : '',
         control.notApplicableReason || ''
       ]);
     } else {
@@ -104,6 +106,7 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
         drivers.contract ? 'Yes' : 'No',
         control.isApplicable,
         control.dateLastAssessed || '',
+        control.assessedBy ? control.assessedBy.name : '',
         control.notApplicableReason || ''
       ]);
     }
@@ -123,19 +126,20 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
     { wch: 12 }, // Contract driver
     { wch: 15 }, // Applicable
     { wch: 15 }, // Date
+    { wch: 25 }, // Assessed By
     { wch: 40 }  // Reason
   ];
   worksheet['!cols'] = columnWidths;
 
   // Merge cells for header and sections
   worksheet['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }, // Company header
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } }, // Classification
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, // Company header
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // Classification
     { s: { r: 3, c: 0 }, e: { r: 3, c: 2 } }, // Document Information label
-    { s: { r: 7, c: 0 }, e: { r: 7, c: 9 } }, // Scope and Context label
-    { s: { r: 8, c: 0 }, e: { r: 8, c: 9 } }, // Scope description line 1
-    { s: { r: 9, c: 0 }, e: { r: 9, c: 9 } }, // Scope description line 2
-    { s: { r: 10, c: 0 }, e: { r: 10, c: 9 } }, // Scope description line 3
+    { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Scope and Context label
+    { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Scope description line 1
+    { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Scope description line 2
+    { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } }, // Scope description line 3
     { s: { r: 12, c: 0 }, e: { r: 12, c: 2 } }, // Assessment Criteria label
     { s: { r: 13, c: 0 }, e: { r: 13, c: 2 } }, // Driver label
     { s: { r: 15, c: 3 }, e: { r: 15, c: 6 } }, // Driver why control is required header merge
@@ -155,7 +159,7 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
   };
 
   // Apply styles to column header rows (main headers and sub-headers)
-  for (let col = 0; col < 10; col++) {
+  for (let col = 0; col < 11; col++) {
     // Main column headers (row 15)
     const cellRef1 = XLSX.utils.encode_cell({ r: 15, c: col });
     if (!worksheet[cellRef1]) worksheet[cellRef1] = { v: '' };
@@ -194,7 +198,7 @@ export function exportToExcel(controls: EditableISO27001Control[], companyName: 
 
   // Apply borders to data rows (starting from row 18 - after headers)
   for (let row = 18; row < worksheetData.length; row++) {
-    for (let col = 0; col < 10; col++) {
+    for (let col = 0; col < 11; col++) {
       const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
       if (!worksheet[cellRef]) worksheet[cellRef] = { v: '' };
       worksheet[cellRef].s = dataStyle;

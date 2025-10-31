@@ -11,6 +11,11 @@ export interface ISO27001Control {
   isRequired: boolean;
   isApplicable: 'Applicable' | 'Not Applicable';
   dateLastAssessed: string;
+  assessedBy?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   notApplicableReason: string;
 }
 
